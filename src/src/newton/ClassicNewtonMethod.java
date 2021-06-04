@@ -14,6 +14,9 @@ public class ClassicNewtonMethod extends AbstractMethod {
     SLAEMethod SLAEMethod;
     double[] prevX;
     double[] p;
+    double diff;
+
+    int countIterations = 0;
 
     public ClassicNewtonMethod(NDimFunction func, double[] x0, double eps) {
         super(func, x0, eps);
@@ -25,12 +28,14 @@ public class ClassicNewtonMethod extends AbstractMethod {
         prevX = curX;
         p = SLAEMethod.findSolution(func.getHess(prevX), multiplyVectorOnScalar(func.getGrad(prevX), -1));
         curX = sumVectors(prevX, p);
+        countIterations++;
+        diff = norm(subtractVectors(curX, prevX));
         return curX;
     }
 
     @Override
     boolean cycleCondition() {
-        return norm(subtractVectors(curX, prevX)) < EPS || norm(p) < EPS;
+        return diff > EPS || countIterations == 0;
     }
 
     @Override

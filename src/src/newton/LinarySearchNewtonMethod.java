@@ -32,7 +32,7 @@ public class LinarySearchNewtonMethod extends AbstractMethod {
         double[] finalPrevX = prevX;
         double[] finalP = p;
         OneDimFunction fun = v -> func.apply(sumVectors(finalPrevX, multiplyVectorOnScalar(finalP, v)));
-        OneDimMethod oneDimMethod = new BrentSearch(fun, -100.0, 100.0, EPS);//TODO: deal with borders
+        OneDimMethod oneDimMethod = new BrentSearch(fun, 0, 100.0, EPS);
         double a = oneDimMethod.findMin();
 
         curX = sumVectors(prevX, multiplyVectorOnScalar(p, a));
@@ -41,7 +41,7 @@ public class LinarySearchNewtonMethod extends AbstractMethod {
 
     @Override
     boolean cycleCondition() {
-        return norm(subtractVectors(curX, prevX)) < EPS || norm(p) < EPS;
+        return norm(subtractVectors(curX, prevX)) > EPS && norm(p) > EPS;
     }
 
     @Override

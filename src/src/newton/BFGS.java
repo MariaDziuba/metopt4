@@ -9,6 +9,7 @@ import static src.utils.MatrixUtil.*;
  */
 public class BFGS extends AbstractQuasiMethod {
 
+    int countIterations = 0;
     /**
      * Текущее приближение (матрицу, близкую к гессиану)
      */
@@ -21,18 +22,25 @@ public class BFGS extends AbstractQuasiMethod {
 
     @Override
     double[] iterate(double[] x) {
-        double[] p = multiplyVectorOnScalar(multiplyMatrixOnVector(C, grad), -1);
-        double[] nextX = getNextX(func, curX, p);
-        double[] nextGrad = func.getGrad(nextX);
-        C = getNextC(C, subtractVectors(nextX, curX), subtractVectors(nextGrad, grad));
-        curX = nextX;
-        grad = nextGrad;
+        int i = 0;
+        while (norm(grad) > EPS && i < curX.length) {
+            double[] p = multiplyVectorOnScalar(multiplyMatrixOnVector(C, grad), -1);
+            double[] nextX = getNextX(func, curX, p);
+            double[] nextGrad = func.getGrad(nextX);
+            C = getNextC(C, subtractVectors(nextX, curX), subtractVectors(nextGrad, grad));
+            curX = nextX;
+            grad = nextGrad;
+            i++;
+        }
+        countIterations += i;
+        C = makeI(curX.length);
+        grad = func.getGrad(curX);
         return curX;
     }
 
     @Override
     boolean cycleCondition() {
-        return norm(grad) > EPS;
+        return norm(grad) > EPS || countIterations == 0;
     }
 
     @Override

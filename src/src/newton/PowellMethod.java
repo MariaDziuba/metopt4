@@ -7,6 +7,7 @@ import static src.utils.MatrixUtil.*;
 public class PowellMethod extends AbstractQuasiMethod {
     double[][] C;
     double[] w;
+    int countIterations = 0;
 
     public PowellMethod(NDimFunction func, double[] x0, double eps) {
         super(func, x0, eps);
@@ -22,22 +23,29 @@ public class PowellMethod extends AbstractQuasiMethod {
 
     @Override
     double[] iterate(double[] x) {
-        double[] p = multiplyMatrixOnVector(C, w);
-        double[] nextX = getNextX(func, curX, p);
-        double[] nextW = multiplyVectorOnScalar(func.getGrad(nextX), -1);
-        // разность приближений
-        double[] deltaX = subtractVectors(nextX, curX);
-        // разность градиентов
-        double[] deltaW = subtractVectors(nextW, w);
-        C = getNextC(C, sumVectors(deltaX, multiplyMatrixOnVector(C, deltaW)), deltaW);
-        curX = nextX;
-        w = nextW;
-        return curX;
+            int i = 0;
+            while (norm(w) > EPS && i < w.length) {
+                double[] p = multiplyMatrixOnVector(C, w);
+                double[] nextX = getNextX(func, curX, p);
+                double[] nextW = multiplyVectorOnScalar(func.getGrad(nextX), -1);
+                // разность приближений
+                double[] deltaX = subtractVectors(nextX, curX);
+                // разность градиентов
+                double[] deltaW = subtractVectors(nextW, w);
+                C = getNextC(C, sumVectors(deltaX, multiplyMatrixOnVector(C, deltaW)), deltaW);
+                curX = nextX;
+                w = nextW;
+                i++;
+            }
+            countIterations += i;
+            C = makeI(curX.length);
+            w = multiplyVectorOnScalar(func.getGrad(curX), -1);
+            return curX;
     }
 
     @Override
     boolean cycleCondition() {
-        return norm(w) > EPS;
+        return norm(w) > EPS || countIterations == 0;
     }
 
     @Override

@@ -42,7 +42,8 @@ public class NewtonMethodWithDescentDirection extends AbstractMethod {
 
     @Override
     boolean cycleCondition() {
-        return diff > EPS || countIterations == 0;
+        return diff > EPS
+                || countIterations == 0;
     }
 
     @Override
