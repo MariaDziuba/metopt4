@@ -1,0 +1,10 @@
+.idea/*
+
+out/*
+
+.DS_Store
+.DS_Store?
+
+src/onedimmethods
+src/functions
+src/gauss
