@@ -1,2 +1,10 @@
-# Project exclude paths
-/out/
+.idea/*
+
+out/*
+
+.DS_Store
+.DS_Store?
+
+src/src/functions
+src/src/onedimmethods
+src/src/gauss
